@@ -6,7 +6,7 @@ setInterval(updateClock, 1000);
 
 document.getElementById('date').innerText = new Date().toDateString();
 
-const azanAudio = new Audio("audio/azan.mp3");
+const azanAudio = new Audio("audio/azan.wav");
 let audioEnabled = true;
 
 // Toggle Button
