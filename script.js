@@ -6,14 +6,27 @@ setInterval(updateClock, 1000);
 
 document.getElementById('date').innerText = new Date().toDateString();
 
-navigator.geolocation.getCurrentPosition(async position => {
-  const lat = position.coords.latitude;
-  const lon = position.coords.longitude;
+const azanAudio = new Audio("audio/azan.mp3");
+let audioEnabled = true;
 
-  const response = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
-  const data = await response.json();
-  const timings = data.data.timings;
+// Toggle Button
+const toggleBtn = document.getElementById("toggleAudio");
+toggleBtn.addEventListener("click", () => {
+  audioEnabled = !audioEnabled;
+  toggleBtn.innerHTML = audioEnabled ? "🔊 Azan Sound: ON" : "🔇 Azan Sound: OFF";
+  toggleBtn.classList.toggle("btn-outline-success", audioEnabled);
+  toggleBtn.classList.toggle("btn-outline-danger", !audioEnabled);
+});
+
+function playAzan() {
+  if (audioEnabled) {
+    azanAudio.play().catch(err => console.log("Audio play error:", err));
+  }
+}
+
+function renderPrayerTimes(timings) {
   const container = document.getElementById('prayer-times');
+  container.innerHTML = "";
 
   const requiredPrayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
   const cardColors = ["primary", "success", "info", "warning", "danger"];
@@ -33,12 +46,6 @@ navigator.geolocation.getCurrentPosition(async position => {
     container.appendChild(col);
     setPrayerAlert(name, time);
   });
-});
-
-const azanAudio = new Audio("audio/azan.mp3");
-
-function playAzan() {
-  azanAudio.play().catch(err => console.log("Audio play error:", err));
 }
 
 function setPrayerAlert(name, time) {
@@ -60,6 +67,37 @@ function setPrayerAlert(name, time) {
   }
 }
 
+function fetchAndCachePrayerTimes(lat, lon) {
+  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
+    .then(response => response.json())
+    .then(data => {
+      const timings = data.data.timings;
+      localStorage.setItem("cachedPrayerTimes", JSON.stringify(timings));
+      renderPrayerTimes(timings);
+    })
+    .catch(() => {
+      const cached = localStorage.getItem("cachedPrayerTimes");
+      if (cached) {
+        renderPrayerTimes(JSON.parse(cached));
+      } else {
+        alert("You're offline and no cached data found.");
+      }
+    });
+}
+
 if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
+
+navigator.geolocation.getCurrentPosition(pos => {
+  const lat = pos.coords.latitude;
+  const lon = pos.coords.longitude;
+  fetchAndCachePrayerTimes(lat, lon);
+}, () => {
+  const cached = localStorage.getItem("cachedPrayerTimes");
+  if (cached) {
+    renderPrayerTimes(JSON.parse(cached));
+  } else {
+    alert("Location denied and no cached data available.");
+  }
+});
