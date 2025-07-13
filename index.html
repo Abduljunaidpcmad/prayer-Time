@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Prayer Time App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon-192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
   <meta name="theme-color" content="#4CAF50" />
   <style>
     body {
       background: linear-gradient(to right, #e0f7fa, #ffffff);
       min-height: 100vh;
-      padding-bottom: 3rem;
+      padding-bottom: 4rem;
     }
     .card {
       border-radius: 1rem;
       transition: transform 0.2s;
     }
     .card:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
     #clock {
       font-size: 2rem;
       font-weight: bold;
+    }
+    .audio-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
     }
     footer {
       position: fixed;
@@ -38,9 +43,15 @@
 </head>
 <body class="container py-4">
 
-  <h2 class="text-center mb-4">🕌 Prayer Time Today</h2>
+  <h2 class="text-center mb-2">🕌 Prayer Time Today</h2>
   <p class="text-center" id="date"></p>
   <p class="text-center" id="clock"></p>
+
+  <div class="audio-toggle">
+    <button id="toggleAudio" class="btn btn-outline-success">
+      🔊 Azan Sound: ON
+    </button>
+  </div>
 
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="prayer-times"></div>
 
@@ -50,9 +61,7 @@
   <script src="script.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('✅ Service Worker Registered'))
-        .catch(error => console.log('❌ Service Worker Error:', error));
+      navigator.serviceWorker.register('service-worker.js');
     }
   </script>
 </body>
