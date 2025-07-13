@@ -18,7 +18,10 @@ navigator.geolocation.getCurrentPosition(async position => {
   const timings = data.data.timings;
   const container = document.getElementById('prayer-times');
 
-  Object.entries(timings).forEach(([name, time]) => {
+  const requiredPrayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
+  requiredPrayers.forEach(name => {
+    const time = timings[name];
     const col = document.createElement('div');
     col.className = "col-md-4 time-card";
     col.innerHTML = `
